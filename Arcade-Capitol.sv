@@ -98,7 +98,7 @@ localparam CONF_STR = {
 	"OC,Cabinet,Upright,Cocktail;",	
 	"-;",
 	"R0,Reset;",
-	"J1,Fire,Barrier,Start 1P,Start 2P;",
+	"J1,Fire,Start 1P,Start 2P;",
 	"V,v",`BUILD_DATE
 };
 
@@ -167,7 +167,7 @@ always @(posedge clk_sys) begin
 			'hX6B: btn_left        <= pressed; // left
 			'hX74: btn_right       <= pressed; // right
 			'h029: btn_fire        <= pressed; // space
-			'hX14: btn_barrier     <= pressed; // ctrl
+			//'hX14: btn_barrier     <= pressed; // ctrl
 
 			'h005: btn_one_player  <= pressed; // F1
 			'h006: btn_two_players <= pressed; // F2
@@ -209,16 +209,16 @@ reg btn_barrier_2=0;
 wire m_left   = status[2] ? btn_down  | joy[2] : btn_left  | joy[1];
 wire m_right  = status[2] ? btn_up    | joy[3] : btn_right | joy[0];
 wire m_fire   = btn_fire | joy[4];
-wire m_barrier= btn_barrier | joy[5];
+wire m_barrier= btn_barrier ;
 
 wire m_left_2   = status[2] ? btn_down_2  | joy[2] : btn_left_2  | joy[1];
 wire m_right_2  = status[2] ? btn_up_2    | joy[3] : btn_right_2 | joy[0];
 wire m_fire_2  = btn_fire_2|joy[4];
-wire m_barrier_2 = btn_barrier_2 | joy[5];
+wire m_barrier_2 = btn_barrier_2 ;
 
 
-wire m_start1 = btn_one_player  | joy[6];
-wire m_start2 = btn_two_players | joy[7];
+wire m_start1 = btn_one_player  | joy[5];
+wire m_start2 = btn_two_players | joy[6];
 wire m_coin   = m_start1 | m_start2;
 
 wire hblank, vblank;
