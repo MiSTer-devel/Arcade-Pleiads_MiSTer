@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------
 -- 
--- Arcade: Capitol port to MiSTer by Sorgelig
+-- Arcade: Pleiads port to MiSTer by Sorgelig
 -- 22 October 2017
 -- 14 June  2019 - renamed and load Capitol ROM for Capitol version (From Phoenix)
 ---------------------------------------------------------------------------------
