@@ -166,7 +166,7 @@ end generate;
   port map
   (
     clk11    => clk,
-	 ce_pix   => ce_pix1,
+    ce_pix   => ce_pix1,
     hcnt     => hcnt,
     vcnt     => vcnt,
     sync_hs  => video_hs,
