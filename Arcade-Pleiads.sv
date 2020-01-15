@@ -100,8 +100,8 @@ assign HDMI_ARY = status[1] ? 8'd9  : status[2] ? 8'd3 : 8'd4;
 `include "build_id.v" 
 localparam CONF_STR = {
 	"A.PLEIADS;;",
-	"O1,Aspect Ratio,Original,Wide;",
-	"O2,Orientation,Vert,Horz;",
+	"H0O1,Aspect Ratio,Original,Wide;",
+	"H0O2,Orientation,Vert,Horz;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
 	"-;",
 	"O89,Lives,3,4,5,6;",
@@ -109,7 +109,8 @@ localparam CONF_STR = {
 	"OC,Cabinet,Upright,Cocktail;",	
 	"-;",
 	"R0,Reset;",
-	"J1,Fire,Start 1P,Start 2P;",
+	"J1,Fire,Start 1P,Start 2P,Coin;",
+	"jn,A,Start,Select,R;",
 	"V,v",`BUILD_DATE
 };
 
@@ -133,6 +134,7 @@ pll pll
 wire [31:0] status;
 wire  [1:0] buttons;
 wire        forced_scandoubler;
+wire        direct_video;
 
 wire        ioctl_download;
 wire        ioctl_wr;
@@ -156,8 +158,10 @@ hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
 
 	.buttons(buttons),
 	.status(status),
+	.status_menumask(direct_video),
 	.forced_scandoubler(forced_scandoubler),
 	.gamma_bus(gamma_bus),
+	.direct_video(direct_video),
 
 	.ioctl_download(ioctl_download),
 	.ioctl_wr(ioctl_wr),
@@ -184,8 +188,8 @@ always @(posedge clk_sys) begin
 			'h029: btn_fire        <= pressed; // space
 			//'hX14: btn_barrier     <= pressed; // ctrl
 
-			'h005: btn_one_player  <= pressed; // F1
-			'h006: btn_two_players <= pressed; // F2
+			'h005: btn_start_1     <= pressed; // F1
+			'h006: btn_start_2     <= pressed; // F2
 			// JPAC/IPAC/MAME Style Codes
 			'h016: btn_start_1     <= pressed; // 1
 			'h01E: btn_start_2     <= pressed; // 2
@@ -207,8 +211,6 @@ reg btn_right   = 0;
 reg btn_left    = 0;
 reg btn_fire    = 0;
 reg btn_barrier = 0;
-reg btn_one_player  = 0;
-reg btn_two_players = 0;
 
 reg btn_start_1=0;
 reg btn_start_2=0;
@@ -221,20 +223,19 @@ reg btn_right_2=0;
 reg btn_fire_2=0;
 reg btn_barrier_2=0;
 
-wire m_left   = status[2] ? btn_down  | joy[2] : btn_left  | joy[1];
-wire m_right  = status[2] ? btn_up    | joy[3] : btn_right | joy[0];
+wire m_left   = btn_left  | joy[1];
+wire m_right  = btn_right | joy[0];
 wire m_fire   = btn_fire | joy[4];
 wire m_barrier= btn_barrier ;
 
-wire m_left_2   = status[2] ? btn_down_2  | joy[2] : btn_left_2  | joy[1];
-wire m_right_2  = status[2] ? btn_up_2    | joy[3] : btn_right_2 | joy[0];
+wire m_left_2   = btn_left_2  | joy[1];
+wire m_right_2  = btn_right_2 | joy[0];
 wire m_fire_2  = btn_fire_2|joy[4];
 wire m_barrier_2 = btn_barrier_2 ;
 
-
-wire m_start1 = btn_one_player  | joy[5];
-wire m_start2 = btn_two_players | joy[6];
-wire m_coin   = m_start1 | m_start2;
+wire m_start1 = btn_start_1 | joy[5];
+wire m_start2 = btn_start_2| joy[6];
+wire m_coin   = btn_coin_1 | joy[7];
 
 wire hblank, vblank;
 wire hs, vs;
@@ -248,17 +249,8 @@ always @(posedge clk_44) begin
         div <= div + 1'd1;
         ce_pix <= !div;
 end
-/*
-reg ce_pix;
-always @(posedge clk_44) begin
-        reg old_clk;
-
-        old_clk <= ce_vid;
-        ce_pix <= old_clk & ~ce_vid;
-end
-*/
-//arcade_rotate_fx #(496,208,6) arcade_video
-arcade_rotate_fx #(478,208,6) arcade_video
+wire no_rotate = status[2] | direct_video;
+arcade_video #(478,208,6) arcade_video
 (
         .*,
 
@@ -271,7 +263,7 @@ arcade_rotate_fx #(478,208,6) arcade_video
         .VSync(vs),
 
         .fx(status[5:3]),
-        .no_rotate(status[2])
+	.rotate_ccw(0)
 );
 //screen_rotate #(239,208,6) screen_rotate
 
@@ -326,8 +318,8 @@ phoenix phoenix
 
 	.dip_switch(dip_switch),
 
-	.btn_coin(m_coin|btn_coin_1|btn_coin_2),
-	.btn_player_start({m_start2|btn_start_2, m_start1|btn_start_1}),
+	.btn_coin(m_coin|btn_coin_2),
+	.btn_player_start({m_start2, m_start1}),
 	.btn_left(m_left|m_left_2),
 	.btn_right(m_right|m_right_2),
 	.btn_barrier(m_barrier|m_barrier_2),
