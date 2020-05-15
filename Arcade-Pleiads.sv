@@ -109,8 +109,8 @@ localparam CONF_STR = {
 	"OC,Cabinet,Upright,Cocktail;",	
 	"-;",
 	"R0,Reset;",
-	"J1,Fire,Start 1P,Start 2P,Coin;",
-	"jn,A,Start,Select,R;",
+	"J1,Fire,Barrier,Start 1P,Start 2P,Coin;",
+	"jn,A,B,Start,Select,R;",
 	"V,v",`BUILD_DATE
 };
 
@@ -186,7 +186,7 @@ always @(posedge clk_sys) begin
 			'hX6B: btn_left        <= pressed; // left
 			'hX74: btn_right       <= pressed; // right
 			'h029: btn_fire        <= pressed; // space
-			//'hX14: btn_barrier     <= pressed; // ctrl
+			'hX14: btn_barrier     <= pressed; // ctrl
 
 			'h005: btn_start_1     <= pressed; // F1
 			'h006: btn_start_2     <= pressed; // F2
@@ -226,7 +226,7 @@ reg btn_barrier_2=0;
 wire m_left   = btn_left  | joy[1];
 wire m_right  = btn_right | joy[0];
 wire m_fire   = btn_fire | joy[4];
-wire m_barrier= btn_barrier ;
+wire m_barrier= btn_barrier | joy[5] ;
 
 wire m_left_2   = btn_left_2  | joy[1];
 wire m_right_2  = btn_right_2 | joy[0];
