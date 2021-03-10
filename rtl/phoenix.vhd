@@ -15,20 +15,22 @@ generic (
 	-- reduce ROMs: 14 is normal game, 13 will draw initial screen, 12 will repeatedly blink 1 line of garbage
 	C_autofire: boolean := true;
 	-- C_audio: boolean := true;
-	C_prog_rom_addr_bits: integer range 12 to 14 := 14 
+	C_prog_rom_addr_bits: integer range 12 to 14 := 14
 );
 port(
 	clk          : in std_logic; -- 11 MHz for TV, 25 MHz for VGA
 	reset        : in std_logic;
 	ce_pix       : out std_logic;
-	
+
 	dn_addr    : in  std_logic_vector(15 downto 0);
 	dn_data    : in  std_logic_vector(7 downto 0);
 	dn_wr      : in  std_logic;
 
 	dip_switch   : in std_logic_vector(7 downto 0);
+	flip_screen  : in std_logic;
+
 	-- game controls, normal logic '1':pressed, '0':released
- 
+
 	btn_coin: in std_logic;
 	btn_player_start: in std_logic_vector(1 downto 0);
 	btn_fire, btn_left, btn_right, btn_barrier: in std_logic;
@@ -180,7 +182,7 @@ end generate;
   );
   reset_n <= not reset;
   ce_pix <= ce_pix1;
-  
+ 
 -- microprocessor 8085
 cpu8085 : entity work.T8080se
 generic map
@@ -241,7 +243,7 @@ begin
 end process;
 
 -- player2 and cocktail mode (flip horizontal/vertical)
-pl2_cocktail <= player2 and dip_switch(7);
+pl2_cocktail <= (player2 and dip_switch(7)) xor flip_screen;
 
 -- horizontal scan video RAMs address background and foreground
 -- with flip and scroll offset

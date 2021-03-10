@@ -124,16 +124,17 @@ wire [1:0] ar = status[15:14];
 assign VIDEO_ARX = (!ar) ? (status[2]  ? 8'd4 : 8'd3) : (ar - 1'd1);
 assign VIDEO_ARY = (!ar) ? (status[2]  ? 8'd3 : 8'd4) : 12'd0;
 
-`include "build_id.v" 
+`include "build_id.v"
 localparam CONF_STR = {
 	"A.PLEIADS;;",
 	"H0OEF,Aspect ratio,Original,Full Screen,[ARC1],[ARC2];",
 	"H0O2,Orientation,Vert,Horz;",
 	"O35,Scandoubler Fx,None,HQ2x,CRT 25%,CRT 50%,CRT 75%;",
+	"O7,Flip Screen,Off,On;",
 	"-;",
 	"O89,Lives,3,4,5,6;",
 	"ODE,Bonus Life,3k/30k,4k/40k,5k/50k,6k/60k;",
-	"OC,Cabinet,Upright,Cocktail;",	
+	"OC,Cabinet,Upright,Cocktail;",
 	"-;",
 	"R0,Reset;",
 	"J1,Fire,Barrier,Start 1P,Start 2P,Coin;",
@@ -266,7 +267,7 @@ assign AUDIO_S = 0;
 // Cocktail,Factory,Factory,Factory,Bonus2,Bonus1,Ships2,Ships1
 //	"O89,Lives,3,5,4,6;",
 //	"ODE,Bonus Life,3k/30k,4k/40k,5k/50k,6k/60k;",
-//	"OC,Cabinet,Upright,Cocktail;",	
+//	"OC,Cabinet,Upright,Cocktail;",
 //8'b00001111;
 
 wire [7:0] dip_switch = { status[12],1'b0,1'b0,1'b0,status[14:13],status[9:8]};
@@ -294,6 +295,7 @@ phoenix phoenix
 	.audio(audio),
 
 	.dip_switch(dip_switch),
+	.flip_screen(status[7]),
 
 	.btn_coin(m_coin),
 	.btn_player_start({m_start2, m_start1}),
