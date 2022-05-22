@@ -17,6 +17,7 @@
 //  You should have received a copy of the GNU General Public License along
 //  with this program; if not, write to the Free Software Foundation, Inc.,
 //  51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+//
 //============================================================================
 
 module emu
@@ -29,7 +30,7 @@ module emu
 	input         RESET,
 
 	//Must be passed to hps_io module
-	inout  [45:0] HPS_BUS,
+	inout  [48:0] HPS_BUS,
 
 	//Base video clock. Usually equals to CLK_SYS.
 	output        CLK_VIDEO,
@@ -239,6 +240,7 @@ pll pll
 wire [31:0] status;
 wire  [1:0] buttons;
 wire        forced_scandoubler;
+wire        video_rotated;
 wire        direct_video;
 
 wire        ioctl_download;
@@ -253,12 +255,10 @@ wire [15:0] joy = joystick_0 | joystick_1;
 wire [21:0] gamma_bus;
 
 
-hps_io #(.STRLEN($size(CONF_STR)>>3)) hps_io
+hps_io #(.CONF_STR(CONF_STR)) hps_io
 (
 	.clk_sys(clk_sys),
 	.HPS_BUS(HPS_BUS),
-
-	.conf_str(CONF_STR),
 
 	.buttons(buttons),
 	.status(status),
@@ -305,9 +305,10 @@ end
 
 wire no_rotate = status[2] | direct_video;
 wire rotate_ccw = 0;
+wire flip = 0;
 screen_rotate screen_rotate (.*);
 
-arcade_video #(239,6) arcade_video
+arcade_video #(239,6,1) arcade_video
 (
         .*,
 
