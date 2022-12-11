@@ -6,6 +6,7 @@
 	<year>1981</year>
 	<manufacturer>Centuri</manufacturer>
 	<category>Space / Shooter</category>
+	<rotation>vertical (cw)</rotation>
 	<rbf>pleiads</rbf>
 	<rom index="0" zip="pleiads.zip|pleiadce.zip" md5="902681424345327ad18175bde6505592">
 		<part crc="711e2ba0" name="pleiades.47"/>
